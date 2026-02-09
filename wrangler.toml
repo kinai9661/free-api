@@ -5,7 +5,7 @@ compatibility_date = "2024-01-01"
 # KV Namespaces
 [[kv_namespaces]]
 binding = "KV"
-id = "your_kv_namespace_id"
+id = "5ea2a9465f614c44a648c3f6a77998c0"
 preview_id = "your_preview_kv_namespace_id"
 
 # R2 Buckets
