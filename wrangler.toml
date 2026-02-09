@@ -1,4 +1,4 @@
-name = "z-all-in"
+name = "z-all-in-one"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
@@ -20,4 +20,3 @@ name = "z-all-in-one"
 DEFAULT_API_KEY = ""
 # Production API key for api.airforce (set in Cloudflare dashboard)
 AIRFORCE_API_KEY = ""
-

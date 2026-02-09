@@ -1948,77 +1948,6 @@ async function handleWebUI(request, env) {
             font-size: 15px;
             font-weight: 400;
         }
-        .token-section {
-            background: var(--panel);
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-        }
-        .token-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 15px;
-        }
-        .token-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .token-status {
-            font-size: 12px;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: 600;
-        }
-        .token-status.active {
-            background: var(--accent-light);
-            color: var(--success);
-        }
-        .token-status.inactive {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-        }
-        .token-input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .token-input-group input {
-            flex: 1;
-            margin-bottom: 0;
-        }
-        .token-input-group button {
-            width: auto;
-            padding: 10px 24px;
-            white-space: nowrap;
-        }
-        .token-guide {
-            font-size: 12px;
-            color: #94a3b8;
-            padding: 12px;
-            background: rgba(100, 116, 139, 0.1);
-            border-radius: 6px;
-            border-left: 3px solid var(--accent);
-            line-height: 1.6;
-        }
-        .token-guide strong {
-            color: var(--accent);
-            font-weight: 600;
-        }
-        .token-guide code {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: 'Courier New', monospace;
-            font-size: 11px;
-        }
-        
         /* Tabs */
         .tabs { 
             display: flex; 
@@ -2464,36 +2393,6 @@ async function handleWebUI(request, env) {
             </button>
         </div>
         
-        <!-- API Key Section -->
-        <div class="token-section">
-            <div class="token-header">
-                <div class="token-title">
-                    🔑 API Key
-                </div>
-                <div class="token-status inactive" id="apiKeyStatus">未設定</div>
-            </div>
-            <div class="token-input-group">
-                <input type="text" id="apiKey" placeholder="輸入您的 API Key（用於圖像和音頻）">
-                <button onclick="setApiKey()">設定 API Key</button>
-                <button onclick="clearApiKey()" class="btn-secondary" style="width: auto; padding: 10px 20px;">清除</button>
-                <button onclick="toggleApiKeyVisibility()" id="toggleKeyBtn" class="btn-secondary" style="width: auto; padding: 10px 20px;">👁️ 顯示</button>
-            </div>
-            <div class="token-display" id="apiKeyDisplay" style="display: none; margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; font-family: monospace; font-size: 12px; word-break: break-all; color: #94a3b8;">
-                <div style="margin-bottom: 5px; color: #cbd5e1; font-weight: 600;">當前 API Key：</div>
-                <span id="apiKeyValue">未設定</span>
-            </div>
-            <div class="token-guide">
-                <strong>📖 如何獲取您的 API Key：</strong><br>
-                1. 在瀏覽器中打開 <code>image.z.ai</code> 或 <code>audio.z.ai</code> 並登入<br>
-                2. 按 <code>F12</code> 開啟開發者工具 → 前往 <strong>應用程式</strong> 分頁<br>
-                3. 在左側邊欄展開 <strong>Cookies</strong> → 點擊網站 URL<br>
-                4. 找到 <code>session</code> cookie 並複製其 <strong>值</strong>（以 "ey" 開頭）<br>
-                5. 將其貼上並點擊「設定 API Key」<br><br>
-                <strong>💡 環境變量設定：</strong><br>
-                您也可以在 Cloudflare Workers 環境變量中設定 <code>DEFAULT_API_KEY</code>，這樣所有請求都會自動使用該 key。
-            </div>
-        </div>
-        
         <!-- API Endpoint Section -->
         <div class="card">
             <div class="label">API 端點地址</div>
@@ -2537,6 +2436,11 @@ async function handleWebUI(request, env) {
             <div class="card">
                 <div class="label">提示詞</div>
                 <textarea id="imagePrompt" rows="3" placeholder="描述您想要生成的圖像...">美麗的日落，山脈上充滿鮮豔的色彩</textarea>
+                
+                <div class="label">模型</div>
+                <select id="imageModel">
+                    <!-- Image models will be populated dynamically -->
+                </select>
                 
                 <div class="label">寬高比</div>
                 <select id="imageRatio">
@@ -2658,47 +2562,58 @@ async function handleWebUI(request, env) {
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('apiUrl').value = window.location.origin + '/v1';
             updateModelCount();
-            
-            // Check if environment variable API key is configured
-            const statusEl = document.getElementById('apiKeyStatus');
-            const apiKeyInput = document.getElementById('apiKey');
-            
-            // Try to fetch API status to check if env var is set
-            fetch('/v1/models')
-                .then(response => {
-                    // If we can reach the API, env var might be configured
-                    // This is a simple check - actual API calls will verify
-                    statusEl.textContent = '✓ 環境變量已設定';
-                    statusEl.className = 'token-status active';
-                    apiKeyInput.placeholder = '環境變量 API Key 已設定（可覆蓋）';
-                    apiKeyInput.disabled = true;
-                })
-                .catch(err => {
-                    // If fetch fails, env var might not be set
-                    statusEl.textContent = '未設定';
-                    statusEl.className = 'token-status inactive';
-                });
-            
-            // Load API key from localStorage on page load (for override)
-            const savedToken = localStorage.getItem('zai_api_key');
-            if (savedToken) {
-                apiKey = savedToken;
-                apiKeyInput.value = savedToken;
-                apiKeyInput.disabled = false;
-                
-                // Update status
-                statusEl.textContent = '✓ 已設定（覆蓋）';
-                statusEl.className = 'token-status active';
-                
-                // Load voices with saved token
-                loadVoicesFromAPI();
-            }
+            populateImageModels();
+            loadVoicesFromAPI();
         });
         
         // Update model count
         function updateModelCount() {
             const zaiCount = document.querySelectorAll('#textModel option').length;
             document.getElementById('model-count').textContent = \`共 \${zaiCount} 個模型\`;
+        }
+        
+        // Populate image model select
+        function populateImageModels() {
+            const imageModelSelect = document.getElementById('imageModel');
+            if (!imageModelSelect) return;
+            
+            // Clear existing options
+            imageModelSelect.innerHTML = '';
+            
+            // Get all models from textModel select
+            const textModelSelect = document.getElementById('textModel');
+            const allModels = Array.from(textModelSelect.querySelectorAll('option')).map(opt => ({
+                id: opt.value,
+                name: opt.textContent
+            }));
+            
+            // Filter for image models
+            const imageModels = allModels.filter(m => {
+                const id = m.id.toLowerCase();
+                return id.includes('image') || id.includes('plutogen') || id.includes('flux') || id.includes('stable');
+            });
+            
+            // Add options to image model select
+            if (imageModels.length > 0) {
+                imageModels.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    option.textContent = model.name;
+                    imageModelSelect.appendChild(option);
+                });
+            } else {
+                // Fallback to default models if no image models found
+                const defaultImageModels = [
+                    { id: 'glm-image', name: 'glm-image' },
+                    { id: 'plutogen-o1', name: 'plutogen-o1' }
+                ];
+                defaultImageModels.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    option.textContent = model.name;
+                    imageModelSelect.appendChild(option);
+                });
+            }
         }
         
         // Refresh models
@@ -2759,125 +2674,14 @@ async function handleWebUI(request, env) {
             if (firstVisible) {
                 firstVisible.selected = true;
             }
+            
+            // Update image models based on provider
+            populateImageModels();
         }
         
         let selectedVoice = { name: 'Lila', id: 'system_001' };
         let uploadedFileId = null;
-        let apiKey = '';
-        let useEnvVar = true; // Flag to use environment variable
         
-        // Set API key function
-        function setApiKey() {
-            let token = document.getElementById('apiKey').value.trim();
-            
-            if (!token) {
-                alert('請輸入 API Key');
-                return;
-            }
-            
-            // If token starts with "ey" (JWT format), add "session=" prefix
-            // If it already has "session=", keep it as is
-            if (token.startsWith('ey')) {
-                token = 'session=' + token;
-            } else if (!token.startsWith('session=')) {
-                // If it doesn't start with "ey" or "session=", try to extract the JWT part
-                const match = token.match(/session=([^;]+)/);
-                if (match) {
-                    token = 'session=' + match[1];
-                } else {
-                    alert('無效的 token 格式。Token 應以 "ey" (JWT) 或 "session=" 開頭');
-                    return;
-                }
-            }
-            
-            apiKey = token;
-            useEnvVar = false; // Use user-provided token instead of env var
-            document.getElementById('apiKey').value = token;
-            
-            // Save to localStorage
-            localStorage.setItem('zai_api_key', token);
-            
-            // Update status
-            const statusEl = document.getElementById('apiKeyStatus');
-            statusEl.textContent = '✓ 已設定（覆蓋環境變量）';
-            statusEl.className = 'token-status active';
-            
-            // Update display if visible
-            if (apiKeyVisible) {
-                const valueEl = document.getElementById('apiKeyValue');
-                valueEl.textContent = token;
-                valueEl.style.color = '#94a3b8';
-            }
-            
-            // Reload voices automatically
-            loadVoicesFromAPI();
-            
-            alert('✅ API Key 設定成功！語音列表已更新。');
-        }
-        
-        // Clear API key function (revert to env var)
-        function clearApiKey() {
-            apiKey = '';
-            useEnvVar = true;
-            document.getElementById('apiKey').value = '';
-            localStorage.removeItem('zai_api_key');
-            
-            // Update status
-            const statusEl = document.getElementById('apiKeyStatus');
-            statusEl.textContent = '✓ 環境變量已設定';
-            statusEl.className = 'token-status active';
-            document.getElementById('apiKey').placeholder = '環境變量 API Key 已設定（可覆蓋）';
-            document.getElementById('apiKey').disabled = true;
-            
-            // Update display if visible
-            if (apiKeyVisible) {
-                const valueEl = document.getElementById('apiKeyValue');
-                valueEl.textContent = '環境變量 API Key（已設定）';
-                valueEl.style.color = '#4ade80';
-            }
-            
-            // Reload voices with env var
-            loadVoicesFromAPI();
-            
-            alert('✅ 已清除自定義 API Key，將使用環境變量。');
-        }
-        
-        // Toggle API key visibility
-        let apiKeyVisible = false;
-        function toggleApiKeyVisibility() {
-            apiKeyVisible = !apiKeyVisible;
-            const displayEl = document.getElementById('apiKeyDisplay');
-            const valueEl = document.getElementById('apiKeyValue');
-            const btnEl = document.getElementById('toggleKeyBtn');
-            
-            if (apiKeyVisible) {
-                displayEl.style.display = 'block';
-                btnEl.textContent = '🙈 隱藏';
-                
-                // Show current API key
-                if (useEnvVar) {
-                    valueEl.textContent = '環境變量 API Key（已設定）';
-                    valueEl.style.color = '#4ade80';
-                } else if (apiKey) {
-                    valueEl.textContent = apiKey;
-                    valueEl.style.color = '#94a3b8';
-                } else {
-                    valueEl.textContent = '未設定';
-                    valueEl.style.color = '#ef4444';
-                }
-            } else {
-                displayEl.style.display = 'none';
-                btnEl.textContent = '👁️ 顯示';
-            }
-        }
-        
-        // Load voices when page loads
-        window.addEventListener('DOMContentLoaded', function() {
-            // Only load if not already loaded by token restoration
-            if (!apiKey) {
-                loadVoicesFromAPI();
-            }
-        });
         
         // Tab switching
         function switchTab(tab) {
@@ -2924,20 +2728,12 @@ async function handleWebUI(request, env) {
         // Load voices from API
         async function loadVoicesFromAPI() {
             const grid = document.getElementById('voiceGrid');
-            const token = apiKey || '';
             
             // Show loading state
             grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 20px;">載入語音中...</div>';
             
             try {
-                const headers = {};
-                if (token) {
-                    // Extract just the JWT part if it has "session=" prefix
-                    const cleanToken = token.replace('session=', '');
-                    headers['Authorization'] = 'Bearer ' + cleanToken;
-                }
-                
-                const response = await fetch('/v1/audio/voices', { headers });
+                const response = await fetch('/v1/audio/voices');
                 
                 if (!response.ok) {
                     throw new Error('載入語音失敗: ' + response.status);
@@ -3034,18 +2830,10 @@ async function handleWebUI(request, env) {
         // Upload voice sample
         async function uploadVoice() {
             const fileInput = document.getElementById('voiceFile');
-            const token = apiKey || '';
             const statusDiv = document.getElementById('uploadStatus');
             
             if (!fileInput.files[0]) {
                 statusDiv.textContent = '❌ 請選擇音頻文件';
-                statusDiv.className = 'status error';
-                statusDiv.style.display = 'block';
-                return;
-            }
-            
-            if (!token) {
-                statusDiv.textContent = '❌ 請先設定您的 API Key';
                 statusDiv.className = 'status error';
                 statusDiv.style.display = 'block';
                 return;
@@ -3059,14 +2847,8 @@ async function handleWebUI(request, env) {
                 const formData = new FormData();
                 formData.append('file', fileInput.files[0]);
                 
-                const headers = {};
-                // Extract just the JWT part
-                const cleanToken = token.replace('session=', '');
-                headers['Authorization'] = 'Bearer ' + cleanToken;
-                
                 const response = await fetch('/v1/audio/voices/upload', {
                     method: 'POST',
-                    headers: headers,
                     body: formData
                 });
                 
@@ -3093,17 +2875,9 @@ async function handleWebUI(request, env) {
         // Clone voice
         async function cloneVoice() {
             const statusDiv = document.getElementById('cloneStatus');
-            const token = apiKey || '';
             const voiceName = document.getElementById('voiceName').value;
             const cloneText = document.getElementById('cloneText').value;
             const testText = document.getElementById('testText').value;
-            
-            if (!token) {
-                statusDiv.textContent = '❌ 請先設定您的 API Key';
-                statusDiv.className = 'status error';
-                statusDiv.style.display = 'block';
-                return;
-            }
             
             if (!uploadedFileId) {
                 statusDiv.textContent = '❌ 請先上傳語音樣本';
@@ -3124,14 +2898,9 @@ async function handleWebUI(request, env) {
             statusDiv.style.display = 'block';
             
             try {
-                const headers = { 'Content-Type': 'application/json' };
-                // Extract just the JWT part
-                const cleanToken = token.replace('session=', '');
-                headers['Authorization'] = 'Bearer ' + cleanToken;
-                
                 const response = await fetch('/v1/audio/voices/clone', {
                     method: 'POST',
-                    headers: headers,
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         voice_name: voiceName,
                         voice_file_id: uploadedFileId,
@@ -3239,27 +3008,22 @@ async function handleWebUI(request, env) {
         // IMAGE GENERATION
         async function generateImage() {
             const prompt = document.getElementById('imagePrompt').value;
+            const model = document.getElementById('imageModel').value;
             const ratio = document.getElementById('imageRatio').value;
             const resolution = document.getElementById('imageResolution').value;
             const count = parseInt(document.getElementById('imageCount').value);
             const adultContent = document.getElementById('adultContent').checked;
-            const token = apiKey || '';
             const output = document.getElementById('imageOutput');
             const imageContainer = document.getElementById('imageContainer');
-            
-            if (!token) {
-                output.textContent = '❌ 請先設定您的 API Key';
-                return;
-            }
             
             output.textContent = '⏳ 生成圖像中...';
             imageContainer.innerHTML = '';
             
             try {
                 const headers = { 'Content-Type': 'application/json' };
-                headers['Authorization'] = 'Bearer ' + token;
                 
                 const requestBody = {
+                    model,
                     prompt,
                     ratio,
                     resolution,
@@ -3331,27 +3095,16 @@ async function handleWebUI(request, env) {
             const text = document.getElementById('audioText').value;
             const speed = parseFloat(document.getElementById('audioSpeed').value);
             const volume = parseInt(document.getElementById('audioVolume').value);
-            const token = apiKey || '';
             const output = document.getElementById('audioOutput');
             const audioContainer = document.getElementById('audioContainer');
-            
-            if (!token) {
-                output.textContent = '❌ 請先設定您的 API Key';
-                return;
-            }
             
             output.textContent = '⏳ 生成音頻中...';
             audioContainer.innerHTML = '';
             
             try {
-                const headers = { 'Content-Type': 'application/json' };
-                // Extract just the JWT part
-                const cleanToken = token.replace('session=', '');
-                headers['Authorization'] = 'Bearer ' + cleanToken;
-                
                 const response = await fetch('/v1/audio/speech', {
                     method: 'POST',
-                    headers: headers,
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         input: text,
                         voice: selectedVoice.name,
