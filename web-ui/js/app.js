@@ -278,6 +278,8 @@ function loadCurrentPage() {
 
   // Update page title
   const titles = {
+    chat: '聊天',
+    image: '圖片生成',
     dashboard: '儀表板',
     apikeys: 'API Keys',
     monitoring: '監控',
@@ -297,6 +299,12 @@ function loadCurrentPage() {
 
   // Load page data
   switch (hash) {
+    case 'chat':
+      ChatPage.load();
+      break;
+    case 'image':
+      ImagePage.load();
+      break;
     case 'dashboard':
       DashboardPage.load();
       break;

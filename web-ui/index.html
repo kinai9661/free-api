@@ -18,6 +18,20 @@
           <span class="version">v1.0.0</span>
         </div>
         <nav class="sidebar-nav">
+          <a href="#chat" class="nav-item" data-page="chat">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>聊天</span>
+          </a>
+          <a href="#image" class="nav-item" data-page="image">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+            <span>圖片生成</span>
+          </a>
           <a href="#dashboard" class="nav-item active" data-page="dashboard">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <rect x="3" y="3" width="7" height="7"></rect>
@@ -89,6 +103,120 @@
 
         <!-- Page Content -->
         <div class="page-content" id="pageContent">
+          <!-- Chat Page -->
+          <div class="page hidden" id="page-chat">
+            <div class="chat-container">
+              <div class="chat-sidebar">
+                <div class="chat-sidebar-header">
+                  <h3>對話歷史</h3>
+                  <button class="btn btn-sm btn-primary" id="newChatBtn">新對話</button>
+                </div>
+                <div class="chat-history" id="chatHistory">
+                  <!-- Chat history items will be loaded dynamically -->
+                </div>
+              </div>
+              <div class="chat-main">
+                <div class="chat-messages" id="chatMessages">
+                  <div class="chat-message chat-message-assistant">
+                    <div class="chat-message-avatar">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                      </svg>
+                    </div>
+                    <div class="chat-message-content">
+                      <p>你好！我是 AI 助手，有什麼我可以幫助你的嗎？</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="chat-input-container">
+                  <div class="chat-input-wrapper">
+                    <textarea id="chatInput" placeholder="輸入訊息..." rows="1"></textarea>
+                    <button class="chat-send-btn" id="chatSendBtn">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                      </svg>
+                    </button>
+                  </div>
+                  <div class="chat-options">
+                    <select id="chatModel" class="chat-model-select">
+                      <option value="gpt-4">GPT-4</option>
+                      <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    </select>
+                    <label class="chat-option">
+                      <input type="checkbox" id="chatStream" checked>
+                      <span>串流輸出</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Image Generation Page -->
+          <div class="page hidden" id="page-image">
+            <div class="image-container">
+              <div class="image-sidebar">
+                <div class="image-sidebar-header">
+                  <h3>生成歷史</h3>
+                </div>
+                <div class="image-history" id="imageHistory">
+                  <!-- Image history items will be loaded dynamically -->
+                </div>
+              </div>
+              <div class="image-main">
+                <div class="image-preview" id="imagePreview">
+                  <div class="image-preview-placeholder">
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    <p>生成的圖片將顯示在這裡</p>
+                  </div>
+                </div>
+                <div class="image-input-container">
+                  <div class="image-input-wrapper">
+                    <textarea id="imagePrompt" placeholder="描述你想要生成的圖片..." rows="3"></textarea>
+                  </div>
+                  <div class="image-options">
+                    <div class="image-option-group">
+                      <label>模型</label>
+                      <select id="imageModel" class="image-select">
+                        <option value="dall-e-3">DALL-E 3</option>
+                        <option value="dall-e-2">DALL-E 2</option>
+                      </select>
+                    </div>
+                    <div class="image-option-group">
+                      <label>尺寸</label>
+                      <select id="imageSize" class="image-select">
+                        <option value="1024x1024">1024 x 1024</option>
+                        <option value="1792x1024">1792 x 1024</option>
+                        <option value="1024x1792">1024 x 1792</option>
+                      </select>
+                    </div>
+                    <div class="image-option-group">
+                      <label>數量</label>
+                      <select id="imageCount" class="image-select">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary image-generate-btn" id="imageGenerateBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                      <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                      <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    生成圖片
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Dashboard Page -->
           <div class="page" id="page-dashboard">
             <div class="stats-grid">
@@ -367,6 +495,8 @@
   </div>
 
   <script src="/js/app.js"></script>
+  <script src="/js/pages/chat.js"></script>
+  <script src="/js/pages/image.js"></script>
   <script src="/js/pages/dashboard.js"></script>
   <script src="/js/pages/apikeys.js"></script>
   <script src="/js/pages/monitoring.js"></script>
