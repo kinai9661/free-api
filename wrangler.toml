@@ -1,0 +1,22 @@
+name = "z-all-in-one"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+# Project metadata and environment variables
+[vars]
+VERSION = "1.0.0"
+# Default API key for Z.ai (optional - can be overridden by environment variables)
+# Set this in your .dev.vars file for local development
+# or in Cloudflare dashboard for production
+DEFAULT_API_KEY = ""
+# API key for api.airforce (optional - can be overridden by environment variables)
+AIRFORCE_API_KEY = ""
+
+[env.production]
+name = "z-all-in-one"
+
+[env.production.vars]
+# Production API key for Z.ai (set in Cloudflare dashboard)
+DEFAULT_API_KEY = ""
+# Production API key for api.airforce (set in Cloudflare dashboard)
+AIRFORCE_API_KEY = ""
