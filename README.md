@@ -41,9 +41,9 @@ npm run dev
 
 ### 部署到 Cloudflare Pages
 
-#### 方法 1：使用 Wrangler CLI
+#### 方法 1：使用 Wrangler CLI（推薦）
 
-1. 安裝依賴（包含最新版 Wrangler）：
+1. 安裝依賴：
 ```bash
 npm install
 ```
@@ -53,9 +53,15 @@ npm install
 npx wrangler login
 ```
 
-3. 構建並部署：
+3. 構建專案：
 ```bash
-npm run pages:deploy
+npm run build
+npm run pages:build
+```
+
+4. 部署到 Cloudflare Pages：
+```bash
+npx wrangler pages deploy .vercel/output/static --project-name=api-airforce-gateway
 ```
 
 #### 方法 2：使用 Cloudflare Dashboard
