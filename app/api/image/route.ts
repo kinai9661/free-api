@@ -6,6 +6,9 @@ import { airforceService } from '@/lib/services/airforceService';
 import { apiKeyService } from '@/lib/services/apiKeyService';
 import { ImageRequest } from '@/types';
 
+// 強制動態渲染，因為此路由使用 request.headers
+export const dynamic = 'force-dynamic';
+
 /**
  * POST /api/image/generations - 圖片生成端點
  */

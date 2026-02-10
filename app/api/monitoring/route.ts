@@ -3,6 +3,9 @@ import { authMiddleware, hasPermission, verifyAdminPassword } from '@/lib/middle
 import { getMonitoringData, getSystemStats } from '@/lib/middleware/monitoring';
 import { apiKeyService } from '@/lib/services/apiKeyService';
 
+// 強制動態渲染，因為此路由使用 request.headers
+export const dynamic = 'force-dynamic';
+
 /**
  * GET /api/monitoring - 獲取監控數據（需要管理員權限）
  */
