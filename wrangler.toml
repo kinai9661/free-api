@@ -6,13 +6,13 @@ compatibility_flags = ["nodejs_compat"]
 # Pages 配置
 pages_build_output_dir = ".vercel/output/static"
 
-# KV 命名空間綁定
+# KV 命名空間綁定（需要在 Cloudflare Dashboard 中創建並替換 ID）
 [[kv_namespaces]]
 binding = "KV"
-id = "your-kv-namespace-id"
+id = "cbc5350dd6ed45bd88dd40a1b5c88189"
 preview_id = "your-preview-kv-namespace-id"
 
-# R2 存儲桶綁定
+# R2 存儲桶綁定（需要在 Cloudflare Dashboard 中創建並替換名稱）
 [[r2_buckets]]
 binding = "R2"
 bucket_name = "api-airforce-gateway-images"
@@ -21,18 +21,3 @@ bucket_name = "api-airforce-gateway-images"
 [vars]
 ENVIRONMENT = "production"
 API_BASE_URL = "https://api.airforce"
-
-# 開發環境配置
-[env.development]
-name = "api-airforce-gateway-dev"
-vars = { ENVIRONMENT = "development" }
-
-# 預覽環境配置
-[env.preview]
-name = "api-airforce-gateway-preview"
-vars = { ENVIRONMENT = "preview" }
-
-# 生產環境配置
-[env.production]
-name = "api-airforce-gateway"
-vars = { ENVIRONMENT = "production" }
