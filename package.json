@@ -1,0 +1,43 @@
+{
+  "name": "api-airforce-gateway",
+  "version": "1.0.0",
+  "description": "API Gateway for api.airforce with chat and image generation",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "pages:build": "npx @cloudflare/next-on-pages",
+    "pages:dev": "npx wrangler pages dev .vercel/output/static --compatibility-flag=nodejs_compat",
+    "pages:deploy": "npm run build && npm run pages:build && wrangler pages deploy .vercel/output/static"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "@headlessui/react": "^2.0.0",
+    "@heroicons/react": "^2.1.0",
+    "swr": "^2.2.0",
+    "recharts": "^2.12.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.3.0",
+    "lucide-react": "^0.378.0"
+  },
+  "devDependencies": {
+    "@cloudflare/next-on-pages": "^1.13.0",
+    "@types/node": "^20.12.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.3",
+    "typescript": "^5.4.5",
+    "wrangler": "^3.57.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
