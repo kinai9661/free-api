@@ -9,7 +9,7 @@ pages_build_output_dir = ".vercel/output/static"
 # KV 命名空間綁定
 [[kv_namespaces]]
 binding = "KV"
-id = "cbc5350dd6ed45bd88dd40a1b5c88189"
+id = "your-kv-namespace-id"
 preview_id = "your-preview-kv-namespace-id"
 
 # R2 存儲桶綁定

@@ -43,14 +43,14 @@ npm run dev
 
 #### 方法 1：使用 Wrangler CLI
 
-1. 安裝 Wrangler：
+1. 安裝依賴（包含最新版 Wrangler）：
 ```bash
-npm install -g wrangler
+npm install
 ```
 
 2. 登入 Cloudflare：
 ```bash
-wrangler login
+npx wrangler login
 ```
 
 3. 構建並部署：
