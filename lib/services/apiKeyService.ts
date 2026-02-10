@@ -154,3 +154,18 @@ export function hasPermission(apiKey: ApiKey, permissionType: string): boolean {
 
 // 初始化預設 API Key
 initializeDefaultApiKey();
+
+/**
+ * API Key Service 物件
+ */
+export const apiKeyService = {
+  getApiKey,
+  createApiKey,
+  updateApiKey,
+  deleteApiKey,
+  listApiKeys,
+  updateApiKeyUsage,
+  resetTodayUsage,
+  hasPermission,
+  initializeDefaultApiKey,
+};
